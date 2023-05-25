@@ -11,9 +11,8 @@ let spots = [
       latitude: -3.7380718,
       longitude: -38.4921980
     },
-    free: 1,
-    occupied: 2,
-    reserved: 2,
+    status: "Livre",
+    weather: "shade",
     id: "1"
   },
   {
@@ -22,10 +21,19 @@ let spots = [
       latitude: -3.7243827,
       longitude: -38.5021659
     },
-    free: 2,
-    occupied: 5,
-    reserved: 3,
+    status: "Reservada",
+    weather: "sunny",
     id:"2"
+  },
+  {
+    name: "Rua Barão do Rio Branco",
+    location: {
+      latitude: -3.7233251,
+      longitude: -38.5272121
+    },
+    status: "Ocupada",
+    weather: "sunny",
+    id:"3"
   }
 ]
 
@@ -34,9 +42,8 @@ const showSpots = spots.map((spot) =>
     key={spot.id} 
     location={spot.location}
     name={spot.name} 
-    free={spot.free} 
-    reserved={spot.reserved} 
-    occupied={spot.occupied} 
+    status={spot.status}
+    weather={spot.weather} 
   />
 );
 
@@ -54,9 +61,7 @@ function MapScreen() {
   
         let { coords } = await Location.getCurrentPositionAsync({});
         setLocation(coords);
-        if (location) {
-          console.log(location)
-        }
+
       })();
     }, []);
     

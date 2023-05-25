@@ -3,10 +3,8 @@ import SpotCard from '../components/SpotCard';
 
 const userSpots = [
   {location: "Av Santos Dumont", vehicle: "NDR1987", timer:"00:40" },
-  {location: "Av 13 de maio", vehicle: "NDR1987", timer:"00:00" },
-  {location: "Av Heráclito Graça", vehicle: "NDR1987", timer:"00:00" },
-  {location: "Av da Abolição", vehicle: "NDR1987", timer:"00:00" },
-  {location: "Av Jovita Feitosa", vehicle: "NDR1987", timer:"00:00" },
+  {location: "Av Beira Mar", vehicle: "NDR1987", timer:"00:00" },
+  {location: "R. Barão do Rio Branco", vehicle: "NDR1987", timer:"00:00" },
 ]
 
 const spotComponent = userSpots.map((spot) => 

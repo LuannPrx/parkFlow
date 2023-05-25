@@ -9,7 +9,7 @@ const SpotCard = props => {
             <Ionicons name="location-sharp" size={36} color="black" />
         </View>
         <View style={styles.location}>
-            <Text style={{fontSize: 18, fontWeight: "bold"}}>{props.location}</Text>
+            <Text style={{fontSize: 18, fontWeight: "bold", flexWrap: "wrap"}}>{props.location}</Text>
         </View>
         <View style={styles.carInfo}>
             <Text style={{fontWeight: "bold"}}>{props.vehicle}</Text>
@@ -48,7 +48,8 @@ const styles = StyleSheet.create({
       alignItems: "center"
     },
     location: {
-      flex: 1
+      flex: 1,
+      flexWrap: "wrap"
     },
     carInfo: {
       flex: 1
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
     },
     timeRemaining: {
       flex: 1,
-      backgroundColor: "#4691ef",
+      backgroundColor: "#9222F2",
       justifyContent: "center",
       alignItems: "center",
       marginRight:15,

@@ -26,6 +26,7 @@ function BottomTabNavigator() {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
+        tabBarActiveTintColor: "#9222F2"
       })}
       >
         <Tab.Screen name="Mapa" component={MapScreen} options={{headerShown: false}} />
