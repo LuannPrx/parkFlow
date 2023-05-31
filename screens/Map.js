@@ -1,4 +1,4 @@
-import { StyleSheet, View, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { StyleSheet, View, TextInput, TouchableWithoutFeedback, Keyboard, Alert, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
 import MapView from 'react-native-maps';
 import SpotMarker from '../components/SpotMarker';
@@ -48,22 +48,33 @@ const showSpots = spots.map((spot) =>
 );
 
 function MapScreen() {
-    const [location, setLocation] = useState();
-    const [errorMsg, setErrorMsg] = useState();
+    const [location, setLocation] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [showUserLocation, setShowUserLocation] = useState(true)
 
     useEffect(() => {
       (async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-          setErrorMsg('Permission to access location was denied');
+          Alert.alert("Permissão negada", "Para utilizar as funcionalidades do mapa, o aplicativo precisa utilizar a sua localização");
+          setShowUserLocation(false)
+          setLocation({latitude: -3.7329694, longitude: -38.5265801})
+          setIsLoading(false)
           return;
         }
-  
         let { coords } = await Location.getCurrentPositionAsync({});
         setLocation(coords);
-
+        setIsLoading(false)
       })();
     }, []);
+
+    if (isLoading) {
+      return (
+        <View style={{flex: 1, justifyContent:"center", alignItems:"center"}}>
+          <ActivityIndicator size="large" color="#9222F2"/>
+        </View>
+      );
+    }
     
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -71,12 +82,13 @@ function MapScreen() {
           <MapView
           provider="google"
           initialRegion={{
-            latitude: -3.734372,
-            longitude: -38.522551,
+            latitude: location.latitude,
+            longitude: location.longitude,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
             }}
           style={styles.map}
+          showsUserLocation={showUserLocation}
           >
             {showSpots}
           </MapView>
