@@ -3,55 +3,44 @@ import { useState, useEffect } from 'react';
 import MapView from 'react-native-maps';
 import SpotMarker from '../components/SpotMarker';
 import * as Location from 'expo-location'
+import Paho from 'paho-mqtt';
 
-let spots = [
-  {
-    name: "Av Santos Dumont",
-    location: {
-      latitude: -3.7380718,
-      longitude: -38.4921980
-    },
-    status: "Livre",
-    weather: "shade",
-    id: "1"
-  },
-  {
-    name: "Av Beira Mar",
-    location: {
-      latitude: -3.7243827,
-      longitude: -38.5021659
-    },
-    status: "Reservada",
-    weather: "sunny",
-    id:"2"
-  },
-  {
-    name: "Rua Barão do Rio Branco",
-    location: {
-      latitude: -3.7233251,
-      longitude: -38.5272121
-    },
-    status: "Ocupada",
-    weather: "sunny",
-    id:"3"
-  }
-]
-
-const showSpots = spots.map((spot) => 
-  <SpotMarker 
-    key={spot.id} 
-    location={spot.location}
-    name={spot.name} 
-    status={spot.status}
-    weather={spot.weather} 
-  />
+client = new Paho.Client(
+  "test.mosquitto.org",
+  Number(8080),
+  'mqtt-async-test'
 );
 
 function MapScreen() {
     const [location, setLocation] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [showUserLocation, setShowUserLocation] = useState(true)
+    const [showUserLocation, setShowUserLocation] = useState(true);
+    const [spots, setSpots] = useState([])
 
+    function onMessage(message) {
+      if (message.destinationName === "notifications"){
+        setSpots(JSON.parse(message.payloadString));
+      }
+    }
+
+    const renderSpotMarkers = (spots) => {
+      return spots.map((spot) => (
+        <SpotMarker 
+          key={spot.deviceName} 
+          location={spot.location}
+          name={spot.name} 
+          status={spot.isOcuppied}
+          deviceName={spot.deviceName}
+          client={client}
+          user={12345}
+          requested={spot.requestedBy}
+          //weather={spot.weather} 
+        />
+      ));
+    };
+
+    const showSpots = renderSpotMarkers(spots);
+    
     useEffect(() => {
       (async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
@@ -64,9 +53,22 @@ function MapScreen() {
         }
         let { coords } = await Location.getCurrentPositionAsync({});
         setLocation(coords);
-        setIsLoading(false)
       })();
     }, []);
+    
+    useEffect(() => {
+        client.connect( {
+          onSuccess: () => {
+          client.subscribe("notifications");
+          client.onMessageArrived = onMessage;
+          setIsLoading(false)
+        },
+        onFailure: () => {
+          Alert.alert("Serviço indisponível", "não foi possível se conectar ao servidor");
+          setIsLoading(false)
+        }
+      });
+    }, [])
 
     if (isLoading) {
       return (
@@ -82,10 +84,10 @@ function MapScreen() {
           <MapView
           provider="google"
           initialRegion={{
-            latitude: location.latitude,
-            longitude: location.longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
+            latitude: -3.7449195, //location.latitude,
+            longitude: -38.5781234, //location.longitude,
+            latitudeDelta: 0.02,
+            longitudeDelta: 0.01,
             }}
           style={styles.map}
           showsUserLocation={showUserLocation}

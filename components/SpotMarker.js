@@ -1,6 +1,8 @@
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Alert} from 'react-native';
 import { Callout, Marker } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
+import Paho from 'paho-mqtt';
+
 
 const SpotMarker = props => {
   let iconName=""
@@ -13,6 +15,12 @@ const SpotMarker = props => {
     iconName="cloud"
     iconColor="gray"
   }
+
+  function ReserveSpot(client, device, user) {
+    const message = new Paho.Message(user);
+    message.destinationName = "devices/"+device+"/reserve";
+    client.send(message);
+  }
   
   return (
     <Marker
@@ -20,7 +28,17 @@ const SpotMarker = props => {
     >
       <View style={{ width: 50, height: 50 }}>
         <Image
-          source={require('../assets/MarkerIcon.png')}
+          source={
+            (props.status === true && props.requested === null)
+              ? require('../assets/marker-occupied-bad.png')
+              : (props.status === false && props.requested === null)
+              ? require('../assets/marker-free.png')
+              : (props.status === false && props.requested)
+              ? require('../assets/marker-reserved.png')
+              : (props.status === true && props.requested)
+              ? require('../assets/marker-occupied.png')
+              : null
+          } 
           style={{ width: '100%', height: '100%' }}
           resizeMode="contain"
         />
@@ -35,13 +53,22 @@ const SpotMarker = props => {
               <Ionicons name={iconName} size={30} color={iconColor}/>
             </View>
           </View>
-          <View style={[styles.status, 
-            props.status==="Livre" ? styles.free: null, 
-            props.status==="Reservada" ? styles.reserved: null,
-            props.status==="Ocupada" ? styles.occupied: null
-            ]}>
-            <Text style={styles.statusText}>{props.status}</Text>
-          </View>
+          <TouchableOpacity style={[styles.status, 
+            (props.status===true && props.requested===null) ? styles.occupiedBad:null, 
+            (props.status===false && props.requested===null) ? styles.free:null, 
+            (props.status===false && props.requested) ? styles.reserved:null,
+            (props.status===true && props.requested) ? styles.occupied:null,  
+            ]} 
+          //   onPress={props.status ? 
+          //     Alert.alert("Vaga ocupada", "A vaga selecionada já está ocupada."):
+          //     ReserveSpot(props.client, props.deviceName, props.requested)
+          // }
+            >
+            {(props.status===true && props.requested===null) ? <Text style={styles.statusText}>Irregular</Text>:null} 
+            {(props.status===false && props.requested===null) ? <Text style={styles.statusText}>Livre</Text>:null}
+            {(props.status===false && props.requested) ?<Text style={styles.statusText}>Reservada</Text>:null}
+            {(props.status===true && props.requested) ? <Text style={styles.statusText}>Ocupada</Text>:null }
+          </TouchableOpacity>
         </View>
       </Callout>
     </Marker>
@@ -92,6 +119,9 @@ const styles = StyleSheet.create({
       backgroundColor: "#4691ef"
     },
     occupied: {
+      backgroundColor: "#9222F2"
+    },
+    occupiedBad: {
       backgroundColor: "red"
     }
   });

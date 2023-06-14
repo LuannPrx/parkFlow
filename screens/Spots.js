@@ -1,24 +1,34 @@
-import { SafeAreaView, StyleSheet, ScrollView } from 'react-native';
+import { SafeAreaView, StyleSheet, ScrollView, Text, View} from 'react-native';
+import { useState } from 'react';
 import SpotCard from '../components/SpotCard';
 
-const userSpots = [
-  {location: "Av Santos Dumont", vehicle: "NDR1987", timer:"00:40" },
-  {location: "Av Beira Mar", vehicle: "NDR1987", timer:"00:00" },
-  {location: "R. Barão do Rio Branco", vehicle: "NDR1987", timer:"00:00" },
-]
+function SpotsScreen() {
+  const [userSpots, setUserSpots] = useState([])
 
-const spotComponent = userSpots.map((spot) => 
-  <SpotCard location={spot.location} vehicle={spot.vehicle} timer={spot.timer} />
+  const spotComponent = userSpots.map((spot) => 
+  <SpotCard device={spot.deviceName} location={spot.location} />
   );
 
-function SpotsScreen() {
-    return (
-      <SafeAreaView style={styles.container}>
-        <ScrollView>
-          {spotComponent}
-        </ScrollView>
-      </SafeAreaView>
-    );
+  // setUserSpots(
+  //   [
+  //     {location: "Av Santos Dumont", vehicle: "NDR1987", timer:"00:40" },
+  //     {location: "Av Beira Mar", vehicle: "NDR1987", timer:"00:00" },
+  //     {location: "R. Barãor do Rio Branco", vehicle: "NDR1987", timer:"00:00" },
+  //   ]
+  // )
+
+  return (
+    <SafeAreaView style={styles.container}> 
+        {userSpots===[] ? 
+          <ScrollView>
+            {spotComponent}
+          </ScrollView>: 
+          <View style={{justifyContent: "center", alignItems:"center", flex:1}}>
+            <Text style={{color:"gray", alignSelf:"center"}}>Não há vagas para esse usuário</Text>
+          </View>
+        }
+    </SafeAreaView>
+  );
   }
 
 export default SpotsScreen;
