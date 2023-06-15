@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, Alert} from 'react-native';
-import { Callout, Marker } from 'react-native-maps';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Alert, Platform} from 'react-native';
+import { Callout, Marker, CalloutSubview } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import Paho from 'paho-mqtt';
 
@@ -16,10 +16,15 @@ const SpotMarker = props => {
     iconColor="gray"
   }
 
-  function ReserveSpot(client, device, user) {
-    const message = new Paho.Message(user);
-    message.destinationName = "devices/"+device+"/reserve";
-    client.send(message);
+  function ReserveSpot(client, device, user, requested, status) {
+    if ((requested===null &&  status===false) || (requested===user)) {
+      const message = new Paho.Message(user.toString());
+      message.destinationName = "devices/"+device+"/reserve";
+      client.send(message);
+    }
+    else if (status) {
+      Alert.alert("Vaga já ocupada", "Não foi possível reservar a essa vaga pois já está ocupada");
+    }
   }
   
   return (
@@ -43,7 +48,9 @@ const SpotMarker = props => {
           resizeMode="contain"
         />
       </View>
-      <Callout tooltip >
+      <Callout tooltip 
+      {...(Platform.OS === 'android' && { onPress: () => ReserveSpot(props.client, props.deviceName, props.user, props.requested, props.status) })}
+      >
         <View style={styles.container}>
           <View style={styles.top}>
             <View style={styles.title}>
@@ -53,22 +60,40 @@ const SpotMarker = props => {
               <Ionicons name={iconName} size={30} color={iconColor}/>
             </View>
           </View>
-          <TouchableOpacity style={[styles.status, 
-            (props.status===true && props.requested===null) ? styles.occupiedBad:null, 
-            (props.status===false && props.requested===null) ? styles.free:null, 
-            (props.status===false && props.requested) ? styles.reserved:null,
-            (props.status===true && props.requested) ? styles.occupied:null,  
+          {Platform.OS === 'ios' ? (
+            <CalloutSubview
+            style={[
+              styles.status, 
+              (props.status === true && props.requested === null) ? styles.occupiedBad : null, 
+              (props.status === false && props.requested === null) ? styles.free : null, 
+              (props.status === false && props.requested) ? styles.reserved : null,
+              (props.status === true && props.requested) ? styles.occupied : null,  
             ]} 
-          //   onPress={props.status ? 
-          //     Alert.alert("Vaga ocupada", "A vaga selecionada já está ocupada."):
-          //     ReserveSpot(props.client, props.deviceName, props.requested)
-          // }
+            onPress={() => ReserveSpot(props.client, props.deviceName, props.user, props.requested, props.status)}
             >
-            {(props.status===true && props.requested===null) ? <Text style={styles.statusText}>Irregular</Text>:null} 
-            {(props.status===false && props.requested===null) ? <Text style={styles.statusText}>Livre</Text>:null}
-            {(props.status===false && props.requested) ?<Text style={styles.statusText}>Reservada</Text>:null}
-            {(props.status===true && props.requested) ? <Text style={styles.statusText}>Ocupada</Text>:null }
-          </TouchableOpacity>
+              <View>
+                {(props.status === true && props.requested === null) ? <Text style={styles.statusText}>Irregular</Text> : null} 
+                {(props.status === false && props.requested === null) ? <Text style={styles.statusText}>Livre</Text> : null}
+                {(props.status === false && props.requested) ? <Text style={styles.statusText}>Reservada</Text> : null}
+                {(props.status === true && props.requested) ? <Text style={styles.statusText}>Ocupada</Text> : null }
+              </View>
+            </CalloutSubview>
+          ) : (
+            <View
+              style={[
+                styles.status, 
+                (props.status === true && props.requested === null) ? styles.occupiedBad : null, 
+                (props.status === false && props.requested === null) ? styles.free : null, 
+                (props.status === false && props.requested) ? styles.reserved : null,
+                (props.status === true && props.requested) ? styles.occupied : null,  
+              ]}
+              >
+              {(props.status === true && props.requested === null) ? <Text style={styles.statusText}>Irregular</Text> : null} 
+              {(props.status === false && props.requested === null) ? <Text style={styles.statusText}>Livre</Text> : null}
+              {(props.status === false && props.requested) ? <Text style={styles.statusText}>Reservada</Text> : null}
+              {(props.status === true && props.requested) ? <Text style={styles.statusText}>Ocupada</Text> : null }
+            </View>
+          )}
         </View>
       </Callout>
     </Marker>

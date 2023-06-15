@@ -59,9 +59,9 @@ function MapScreen() {
     useEffect(() => {
         client.connect( {
           onSuccess: () => {
-          client.subscribe("notifications");
-          client.onMessageArrived = onMessage;
-          setIsLoading(false)
+            client.subscribe("notifications");
+            client.onMessageArrived = onMessage;
+            setIsLoading(false)
         },
         onFailure: () => {
           Alert.alert("Serviço indisponível", "não foi possível se conectar ao servidor");
