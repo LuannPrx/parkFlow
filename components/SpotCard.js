@@ -1,20 +1,35 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import useStore from '../dataStore';
+import Paho from 'paho-mqtt';
 
 const SpotCard = props => {
-    return (
+  const client = useStore((state) => state.client);
+
+  function CancelReserve(client, device, user) {
+    const message = new Paho.Message(user.toString());
+    message.destinationName = "devices/"+device+"/reserve";
+    client.send(message);
+  }
+
+  return (
     <View style={styles.spotCard}>
-      <View style={styles.info}>
-        <View style={styles.icon}>
-            <Ionicons name="location-sharp" size={36} color="#9222F2" />
+        <View style={styles.info}>
+          <View style={styles.icon}>
+              <Ionicons name="location-sharp" size={36} color={"#9222F2"} />
+          </View>
+          <View style={styles.location}>
+            <Text style={styles.locationText}>{props.location}</Text>
+          </View>
+          <View style={{flex: 1}}>
+            <TouchableOpacity style={styles.cancelButton} onPress={() => CancelReserve(client, props.device, props.user)}>
+              <Text style={{color: "green"}}>Liberar Vaga</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <View style={styles.location}>
-          <Text style={styles.locationText}>{props.location}</Text>
+        <View style={[styles.status, {backgroundColor: props.isOcuppied ? "#9222F2":"#4691ef"}]}>
+          <Text style={styles.statusText}>{props.isOcuppied ? "Estacionado":"Reservada"}</Text>
         </View>
-      </View>
-      <View style={styles.status}>
-        <Text style={styles.statusText}>Estacionado</Text>
-      </View>
     </View>
     );
 };
@@ -23,9 +38,9 @@ export default SpotCard
 
 const styles = StyleSheet.create({
     spotCard: {
-      height: 170,
-      flexDirection: 'row',
+      height: 200,
       margin: 20,
+      flexDirection: "row",
       marginBottom: 0,
       borderWidth: 2,
       borderColor: "#f0f0f0",
@@ -52,9 +67,11 @@ const styles = StyleSheet.create({
       margin: 5,
       marginTop: 0,
     },
+    statusContainer: {
+      flex: 2,
+    },
     status: {
       flex: 2,
-      backgroundColor: "#9222F2",
       justifyContent: "center",
       alignItems: "center",
       marginRight:15,
@@ -67,6 +84,16 @@ const styles = StyleSheet.create({
       color: "#fff",
       fontSize: 22,
       fontWeight: "bold",
+    },
+    cancelButton: {
+      flex: 1,
+      borderWidth: 2,
+      justifyContent: "center",
+      alignItems: "center",
+      borderRadius: 10,
+      marginHorizontal:15,
+      marginBottom: 10,
+      borderColor: "#f0f0f0"
     }
 
   });

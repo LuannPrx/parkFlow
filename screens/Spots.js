@@ -1,15 +1,19 @@
 import { SafeAreaView, StyleSheet, ScrollView, Text, View} from 'react-native';
-import { useState } from 'react';
 import SpotCard from '../components/SpotCard';
 import useStore from '../dataStore';
 
 function SpotsScreen() {
-  const client = useStore((state) => state.client);
   const data = useStore((state) => state.data);
   const userSpots = data.filter((spot) => spot.requestedBy === 12345)
   
   const spotComponent = userSpots.map((spot) => 
-    <SpotCard key={spot.name} location={spot.name} user={spot.requestedBy} status={spot.isOcuppied}/>
+    <SpotCard 
+    key={spot.name} 
+    location={spot.name} 
+    status={spot.isOcuppied} 
+    device={spot.deviceName}
+    user={12345}
+    />
   );  
 
   return (
