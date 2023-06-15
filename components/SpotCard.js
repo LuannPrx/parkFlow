@@ -4,22 +4,14 @@ import { Ionicons } from '@expo/vector-icons';
 const SpotCard = props => {
     return (
     <View style={styles.spotCard}>
-        <View style={styles.info}>
+      <View style={styles.info}>
         <View style={styles.icon}>
             <Ionicons name="location-sharp" size={36} color="black" />
         </View>
         <View style={styles.location}>
             <Text style={{fontSize: 18, fontWeight: "bold", flexWrap: "wrap"}}>{props.location}</Text>
         </View>
-        <View style={styles.carInfo}>
-            <Text style={{fontWeight: "bold"}}>{props.vehicle}</Text>
-        </View>
-        </View>
-        <View style={styles.timer}>
-        <View style={styles.timeRemaining}>
-            <Text style={{color:"white", fontSize:36, fontWeight: "bold"}}>{props.timer}</Text>
-        </View>
-        </View>
+      </View>
     </View>
     );
 };

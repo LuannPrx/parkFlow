@@ -4,6 +4,7 @@ import MapView from 'react-native-maps';
 import SpotMarker from '../components/SpotMarker';
 import * as Location from 'expo-location'
 import Paho from 'paho-mqtt';
+import useStore from '../dataStore';
 
 client = new Paho.Client(
   "test.mosquitto.org",
@@ -16,10 +17,13 @@ function MapScreen() {
     const [isLoading, setIsLoading] = useState(true);
     const [showUserLocation, setShowUserLocation] = useState(true);
     const [spots, setSpots] = useState([])
+    const setClient = useStore((state) => state.setClient);
+    const setData = useStore((state) => state.setData);
 
     function onMessage(message) {
       if (message.destinationName === "notifications"){
-        setSpots(JSON.parse(message.payloadString));
+        setSpots(JSON.parse(message.payloadString))
+        setData(JSON.parse(message.payloadString))
       }
     }
 
@@ -61,6 +65,7 @@ function MapScreen() {
           onSuccess: () => {
             client.subscribe("notifications");
             client.onMessageArrived = onMessage;
+            setClient(client)
             setIsLoading(false)
         },
         onFailure: () => {
