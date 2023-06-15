@@ -13,12 +13,35 @@ client = new Paho.Client(
 );
 
 function MapScreen() {
-    const [location, setLocation] = useState(null);
+    const [region, setRegion] = useState(null);
+    const [address, setAddress] = useState(null)
     const [isLoading, setIsLoading] = useState(true);
     const [showUserLocation, setShowUserLocation] = useState(true);
     const [spots, setSpots] = useState([])
     const setClient = useStore((state) => state.setClient);
     const setData = useStore((state) => state.setData);
+
+    const geocode = async (address) => {
+      if (address) {
+        try {
+          const geocodeResult = await Location.geocodeAsync(address+" Fortaleza - CE");
+          if (geocodeResult.length > 0) {
+            const { latitude, longitude } = geocodeResult[0];
+            const newRegion = {
+              latitude: latitude,
+              longitude: longitude,
+              latitudeDelta: 0.02,
+              longitudeDelta: 0.01,
+            };
+            setRegion(newRegion);
+          } else {
+            Alert.alert("Local não econtrado", "a busca não retornou resultados");
+          }
+        } catch (error) {
+          console.error('geocoding error:', error);
+        }
+      }
+    };
 
     function onMessage(message) {
       if (message.destinationName === "notifications"){
@@ -51,12 +74,9 @@ function MapScreen() {
         if (status !== 'granted') {
           Alert.alert("Permissão negada", "Para utilizar as funcionalidades do mapa, o aplicativo precisa utilizar a sua localização");
           setShowUserLocation(false)
-          setLocation({latitude: -3.7329694, longitude: -38.5265801})
           setIsLoading(false)
           return;
         }
-        let { coords } = await Location.getCurrentPositionAsync({});
-        setLocation(coords);
       })();
     }, []);
     
@@ -96,6 +116,7 @@ function MapScreen() {
             }}
           style={styles.map}
           showsUserLocation={showUserLocation}
+          region={region}
           >
             {showSpots}
           </MapView>
@@ -106,6 +127,9 @@ function MapScreen() {
               placeholder='Onde vamos estacionar?'
               placeholderTextColor={"gray"}
               returnKeyType="search"
+              value={address}
+              onChangeText={setAddress}
+              onSubmitEditing={() => geocode(address)}
               />
             </View>
           </View>

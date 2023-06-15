@@ -6,11 +6,14 @@ const SpotCard = props => {
     <View style={styles.spotCard}>
       <View style={styles.info}>
         <View style={styles.icon}>
-            <Ionicons name="location-sharp" size={36} color="black" />
+            <Ionicons name="location-sharp" size={36} color="#9222F2" />
         </View>
         <View style={styles.location}>
-            <Text style={{fontSize: 18, fontWeight: "bold", flexWrap: "wrap"}}>{props.location}</Text>
+          <Text style={styles.locationText}>{props.location}</Text>
         </View>
+      </View>
+      <View style={styles.status}>
+        <Text style={styles.statusText}>Estacionado</Text>
       </View>
     </View>
     );
@@ -30,33 +33,40 @@ const styles = StyleSheet.create({
       backgroundColor: "white"
     },
     info: {
-      flex: 6,
-      justifyContent: "center",
-      alignItems: "center"
+      flex: 3,
     },
     icon: {
-      flex: 2,
+      flex: 1,
       justifyContent: "center",
-      alignItems: "center"
+      alignItems: "center",
     },
     location: {
       flex: 1,
-      flexWrap: "wrap"
+      justifyContent: "flex-start",
+      alignItems: "center",
     },
-    carInfo: {
-      flex: 1
+    locationText: {
+      fontSize: 18, 
+      fontWeight: "bold", 
+      flexWrap: "wrap",
+      margin: 5,
+      marginTop: 0,
     },
-    timer: {
-      flex: 4
-    },
-    timeRemaining: {
-      flex: 1,
+    status: {
+      flex: 2,
       backgroundColor: "#9222F2",
       justifyContent: "center",
       alignItems: "center",
       marginRight:15,
       marginTop: 35,
       marginBottom: 35,
-      borderRadius: 15
+      borderRadius: 15,
+      padding: 5
+    },
+    statusText: {
+      color: "#fff",
+      fontSize: 22,
+      fontWeight: "bold",
     }
+
   });

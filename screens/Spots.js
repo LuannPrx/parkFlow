@@ -9,7 +9,7 @@ function SpotsScreen() {
   const userSpots = data.filter((spot) => spot.requestedBy === 12345)
   
   const spotComponent = userSpots.map((spot) => 
-    <SpotCard location={spot.name} key={spot.name}/>
+    <SpotCard key={spot.name} location={spot.name} user={spot.requestedBy} status={spot.isOcuppied}/>
   );  
 
   return (
