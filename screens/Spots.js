@@ -4,7 +4,7 @@ import useStore from '../dataStore';
 
 function SpotsScreen() {
   const data = useStore((state) => state.data);
-  const userSpots = data.filter((spot) => spot.requestedBy === 12345)
+  const userSpots = data.filter((spot) => spot.requestedBy === "12345")
   
   const spotComponent = userSpots.map((spot) => 
     <SpotCard 
@@ -12,7 +12,7 @@ function SpotsScreen() {
     location={spot.name} 
     status={spot.isOcuppied} 
     device={spot.deviceName}
-    user={12345}
+    user={"12345"}
     />
   );  
 

@@ -7,8 +7,8 @@ import Paho from 'paho-mqtt';
 import useStore from '../dataStore';
 
 client = new Paho.Client(
-  "test.mosquitto.org",
-  Number(8080),
+  "192.168.0.5",
+  Number(9001),
   'mqtt-async-test'
 );
 
@@ -47,6 +47,7 @@ function MapScreen() {
       if (message.destinationName === "notifications"){
         setSpots(JSON.parse(message.payloadString))
         setData(JSON.parse(message.payloadString))
+        console.log(message.payloadString)
       }
     }
 
@@ -59,7 +60,7 @@ function MapScreen() {
           status={spot.isOcuppied}
           deviceName={spot.deviceName}
           client={client}
-          user={12345}
+          user={"12345"}
           requested={spot.requestedBy}
           //weather={spot.weather} 
         />

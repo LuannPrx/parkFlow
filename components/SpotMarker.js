@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, Image, TouchableOpacity, Alert, Platform} from 
 import { Callout, Marker, CalloutSubview } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import Paho from 'paho-mqtt';
+import { useRef } from 'react/cjs/react.production.min';
 
 
 const SpotMarker = props => {
@@ -17,10 +18,11 @@ const SpotMarker = props => {
   }
 
   function ReserveSpot(client, device, user, requested, status) {
-    if ((requested===null &&  status===false) || (requested===user)) {
-      const message = new Paho.Message(user.toString());
+    if ((requested===null &&  status===false) || (requested===useRef)) {
+      const message = new Paho.Message(user);
       message.destinationName = "devices/"+device+"/reserve";
       client.send(message);
+      console.log("trying to send:"+ message+" to: devices/"+device+"/reserve")
     }
     else if (status) {
       Alert.alert("Vaga já ocupada", "Não foi possível reservar a essa vaga pois já está ocupada");
